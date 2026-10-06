@@ -542,7 +542,7 @@
               <div class="project-image project-image-one">
                 <video autoplay muted loop playsinline>
                   <source
-                    src="assets/videos/videomaker.mp4"
+                    src="assets/videos/15anos.mp4"
                     type="video/mp4"
                   />
                 </video>
@@ -1815,44 +1815,75 @@
 
       targets.forEach(el => {
         if (el.dataset.motionSplit) return;
+
         el.dataset.motionSplit = "1";
-        el.classList.add("motion-text","motion-heading");
-        el.setAttribute("aria-label", el.textContent.replace(/\s+/g," ").trim());
+        el.classList.add("motion-text", "motion-heading");
+        el.setAttribute("aria-label", el.textContent.replace(/\s+/g, " ").trim());
 
         const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
         const nodes = [];
-        while (walker.nextNode()) if (walker.currentNode.textContent.trim()) nodes.push(walker.currentNode);
+
+        while (walker.nextNode()) {
+          if (walker.currentNode.textContent.trim()) {
+            nodes.push(walker.currentNode);
+          }
+        }
 
         let n = 0;
+
         nodes.forEach(node => {
+          const text = node.textContent;
           const frag = document.createDocumentFragment();
-          [...node.textContent].forEach(ch => {
-            if (/\s/.test(ch)) {
-              const s = document.createElement("span");
-              s.className = "motion-space";
-              s.setAttribute("aria-hidden","true");
-              frag.appendChild(s);
-            } else {
-              const s = document.createElement("span");
-              s.className = "motion-char";
-              s.textContent = ch;
-              s.style.setProperty("--char-index",n++);
-              s.setAttribute("aria-hidden","true");
-              frag.appendChild(s);
+
+          /*
+           * IMPORTANTE:
+           * Cada palavra fica dentro de um .motion-word.
+           * Assim as letras continuam animando individualmente,
+           * mas o navegador nunca quebra uma palavra no meio.
+           */
+          const parts = text.split(/(\s+)/);
+
+          parts.forEach(part => {
+            if (/^\s+$/.test(part)) {
+              const space = document.createElement("span");
+              space.className = "motion-space";
+              space.setAttribute("aria-hidden", "true");
+              frag.appendChild(space);
+              return;
             }
+
+            if (!part) return;
+
+            const word = document.createElement("span");
+            word.className = "motion-word";
+            word.setAttribute("aria-hidden", "true");
+
+            [...part].forEach(ch => {
+              const char = document.createElement("span");
+              char.className = "motion-char";
+              char.textContent = ch;
+              char.style.setProperty("--char-index", n++);
+              char.setAttribute("aria-hidden", "true");
+              word.appendChild(char);
+            });
+
+            frag.appendChild(word);
           });
-          node.parentNode.replaceChild(frag,node);
+
+          node.parentNode.replaceChild(frag, node);
         });
       });
 
-      const textObs = new IntersectionObserver((entries,obs) => {
+      const textObs = new IntersectionObserver((entries, obs) => {
         entries.forEach(e => {
           if (!e.isIntersecting) return;
           e.target.classList.add("motion-visible");
           obs.unobserve(e.target);
         });
-      }, {threshold:.22});
+      }, { threshold: .22 });
+
       document.querySelectorAll(".motion-text").forEach(el => textObs.observe(el));
+
 
       const progress = document.getElementById("progress");
       const updateProgress = () => {

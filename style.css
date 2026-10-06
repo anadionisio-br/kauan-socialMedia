@@ -9419,6 +9419,12 @@ html.js body.motion-loading > *:not(.motion-loader) {
 .motion-text {
     perspective: 900px;
 }
+.motion-word {
+    display: inline-block;
+    white-space: nowrap;
+    vertical-align: baseline;
+}
+
 .motion-char {
     display: inline-block;
     opacity: 0;
@@ -9923,5 +9929,294 @@ html.js body.motion-loading > *:not(.motion-loader) {
     }
     .plan-featured {
         animation: none;
+    }
+}
+
+/* =========================================================
+   ANIMAÇÃO DOS TÍTULOS — CORRIGIDA DESKTOP + MOBILE
+========================================================= */
+
+.motion-text {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    perspective: 900px;
+    overflow: visible;
+    word-break: normal;
+    overflow-wrap: normal;
+    white-space: normal;
+}
+
+
+/* Cada palavra fica protegida */
+.motion-word {
+    display: inline-block;
+    white-space: nowrap;
+    word-break: keep-all;
+    overflow-wrap: normal;
+    vertical-align: baseline;
+}
+
+
+/* Cada letra */
+.motion-char {
+    display: inline-block;
+    white-space: normal;
+
+    opacity: 0;
+
+    transform:
+        translate3d(0, 1.15em, 0)
+        rotateX(-75deg)
+        rotateZ(2deg);
+
+    transform-origin: 50% 100%;
+
+    filter: blur(5px);
+
+    transition:
+        opacity 0.8s var(--motion-ease, ease),
+        transform 0.9s var(--motion-spring, cubic-bezier(.22,1,.36,1)),
+        filter 0.8s ease;
+
+    transition-delay:
+        calc(var(--char-index) * 28ms);
+
+    will-change:
+        transform,
+        opacity;
+}
+
+
+/* Letras aparecendo */
+.motion-text.motion-visible .motion-char {
+    opacity: 1;
+
+    transform:
+        translate3d(0, 0, 0)
+        rotateX(0)
+        rotateZ(0);
+
+    filter: blur(0);
+}
+
+
+/* Espaço entre palavras */
+.motion-space {
+    display: inline-block;
+
+    width: 0.28em;
+    min-width: 0.28em;
+
+    white-space: normal;
+}
+
+
+/* Título */
+.motion-heading {
+    position: relative;
+
+    max-width: 100%;
+
+    word-break: normal;
+    overflow-wrap: normal;
+}
+
+
+/* Brilho passando pelo título */
+.motion-heading.motion-visible::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+
+    left: -30%;
+
+    width: 15%;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.45),
+            transparent
+        );
+
+    transform: skewX(-18deg);
+
+    animation:
+        headingSweep 1.1s
+        0.15s
+        var(--motion-ease, ease)
+        forwards;
+}
+
+
+@keyframes headingSweep {
+
+    from {
+        left: -30%;
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    to {
+        left: 125%;
+        opacity: 0;
+    }
+}
+
+
+/* =========================================================
+   CORREÇÃO DOS TÍTULOS PRINCIPAIS
+========================================================= */
+
+.hero-title,
+.about-title h2,
+.section-intro h2,
+.portfolio-heading h2,
+.statement h2,
+.plans-intro h2,
+.extras-heading h2,
+.process-heading h2,
+.contact h2 {
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    hyphens: none !important;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .motion-text {
+        display: block;
+
+        width: 100%;
+        max-width: 100%;
+
+        word-break: normal;
+        overflow-wrap: normal;
+
+        white-space: normal;
+    }
+
+
+    .motion-word {
+        display: inline-block;
+
+        white-space: nowrap;
+
+        word-break: keep-all;
+        overflow-wrap: normal;
+
+        max-width: 100%;
+    }
+
+
+    .motion-char {
+        display: inline-block;
+
+        white-space: normal;
+
+        transform:
+            translate3d(0, 0.8em, 0)
+            rotateX(-55deg)
+            rotateZ(1deg);
+
+        transition-delay:
+            calc(var(--char-index) * 20ms);
+    }
+
+
+    .motion-text.motion-visible .motion-char {
+        transform:
+            translate3d(0, 0, 0)
+            rotateX(0)
+            rotateZ(0);
+    }
+
+
+    .motion-space {
+        width: 0.25em;
+        min-width: 0.25em;
+    }
+
+
+    .motion-heading {
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+        hyphens: none !important;
+    }
+
+
+    .hero-title {
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+        hyphens: none !important;
+    }
+}
+
+
+/* =========================================================
+   TELAS MUITO PEQUENAS
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .motion-text {
+        width: 100%;
+        max-width: 100%;
+    }
+
+
+    .motion-word {
+        white-space: nowrap;
+        word-break: keep-all;
+    }
+
+
+    .motion-char {
+        transition-delay:
+            calc(var(--char-index) * 15ms);
+    }
+
+
+    .motion-space {
+        width: 0.22em;
+        min-width: 0.22em;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .motion-char {
+        opacity: 1 !important;
+
+        transform:
+            none !important;
+
+        filter: none !important;
+
+        transition: none !important;
+    }
+
+    .motion-heading.motion-visible::after {
+        display: none;
     }
 }
